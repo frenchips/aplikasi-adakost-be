@@ -9,11 +9,13 @@ create table adk_roles(
 	created_by varchar(64) not null,
 	modified_at timestamp,
 	modified_by varchar(64)
-)
+);
+
+INSERT INTO adk_roles (id, name, created_at, created_by)
+VALUES
+  (1, 'penyewa', now(), 'admin'),
+  (2, 'pemilik', now(), 'admin'),
+  (3, 'admin', now(), 'admin');
+
 -- +migrate StatementEnd
 
--- +migrate Down
--- +migrate StatementBegin
-
--- DROP TABLE IF EXISTS users;
--- +migrate StatementEnd

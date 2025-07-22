@@ -1,0 +1,92 @@
+basePath: /api
+definitions:
+  common.APIResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  request.RegisterRequest:
+    properties:
+      password:
+        type: string
+      roleid:
+        type: integer
+      username:
+        type: string
+    type: object
+  response.SignUpResponse:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API dokumentasi untuk Aplikasi AdaKost
+  title: AdaKost API
+  version: "1.0"
+paths:
+  /hello:
+    get:
+      consumes:
+      - application/json
+      description: API ini mengembalikan pesan Hello World
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Menampilkan pesan Hello World
+      tags:
+      - kost-controller
+  /kamarHello:
+    get:
+      consumes:
+      - application/json
+      description: API ini mengembalikan pesan Hello World
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Menampilkan pesan Hello World
+      tags:
+      - kost-controller
+  /signup:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/request.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.SignUpResponse'
+              type: object
+      tags:
+      - user-controller
+swagger: "2.0"
