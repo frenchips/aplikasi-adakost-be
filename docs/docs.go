@@ -15,6 +15,148 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/kamar": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kamar-controller"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kamar-controller"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data Kost",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.KamarRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.KamarResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/kamar/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kamar-controller"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Kamar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data Kamar",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateKamarRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.KamarResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kamar-controller"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Kamar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/kost": {
             "get": {
                 "consumes": [
@@ -244,6 +386,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.KamarRequest": {
+            "type": "object",
+            "properties": {
+                "hargaKamar": {
+                    "type": "integer"
+                },
+                "kostId": {
+                    "type": "integer"
+                },
+                "nomorKamar": {
+                    "type": "string"
+                },
+                "statusKamar": {
+                    "type": "string"
+                }
+            }
+        },
         "request.RegisterRequest": {
             "type": "object",
             "properties": {
@@ -254,6 +413,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpdateKamarRequest": {
+            "type": "object",
+            "properties": {
+                "hargaKamar": {
+                    "type": "integer"
+                },
+                "kostId": {
+                    "type": "integer"
+                },
+                "statusKamar": {
                     "type": "string"
                 }
             }
@@ -271,6 +444,23 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "typeKost": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.KamarResponse": {
+            "type": "object",
+            "properties": {
+                "hargaKamar": {
+                    "type": "integer"
+                },
+                "kost": {
+                    "$ref": "#/definitions/response.KostResponse"
+                },
+                "nomorKamar": {
+                    "type": "string"
+                },
+                "statusKamar": {
                     "type": "string"
                 }
             }

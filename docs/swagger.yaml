@@ -19,6 +19,17 @@ definitions:
       typeKost:
         type: string
     type: object
+  request.KamarRequest:
+    properties:
+      hargaKamar:
+        type: integer
+      kostId:
+        type: integer
+      nomorKamar:
+        type: string
+      statusKamar:
+        type: string
+    type: object
   request.RegisterRequest:
     properties:
       password:
@@ -26,6 +37,15 @@ definitions:
       roleid:
         type: integer
       username:
+        type: string
+    type: object
+  request.UpdateKamarRequest:
+    properties:
+      hargaKamar:
+        type: integer
+      kostId:
+        type: integer
+      statusKamar:
         type: string
     type: object
   request.UpdateKostRequest:
@@ -37,6 +57,17 @@ definitions:
       pemilik:
         type: integer
       typeKost:
+        type: string
+    type: object
+  response.KamarResponse:
+    properties:
+      hargaKamar:
+        type: integer
+      kost:
+        $ref: '#/definitions/response.KostResponse'
+      nomorKamar:
+        type: string
+      statusKamar:
         type: string
     type: object
   response.KostResponse:
@@ -74,6 +105,91 @@ info:
   title: AdaKost API
   version: "1.0"
 paths:
+  /kamar:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      tags:
+      - kamar-controller
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data Kost
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.KamarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.KamarResponse'
+              type: object
+      tags:
+      - kamar-controller
+  /kamar/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Kamar
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      tags:
+      - kamar-controller
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Kamar
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data Kamar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateKamarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.KamarResponse'
+              type: object
+      tags:
+      - kamar-controller
   /kost:
     get:
       consumes:
