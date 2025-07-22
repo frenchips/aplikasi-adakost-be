@@ -6,6 +6,7 @@ import (
 	"aplikasi-adakost-be/modules/user/request"
 	"aplikasi-adakost-be/modules/user/response"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -28,6 +29,10 @@ func (u *userService) SaveRegisterUser(req request.RegisterRequest) (response.Si
 
 	if req.Password == "" {
 		return response.SignUpResponse{}, errors.New("password tidak boleh kosong")
+	}
+
+	if len(req.Password) > 16 || len(req.Password) < 6 {
+		return response.SignUpResponse{}, fmt.Errorf("panjang password tidak boleh %d", len(req.Password))
 	}
 
 	user := model.Users{

@@ -8,6 +8,17 @@ definitions:
       success:
         type: boolean
     type: object
+  request.AddKostRequest:
+    properties:
+      alamat:
+        type: string
+      namaKost:
+        type: string
+      pemilik:
+        type: integer
+      typeKost:
+        type: string
+    type: object
   request.RegisterRequest:
     properties:
       password:
@@ -17,11 +28,44 @@ definitions:
       username:
         type: string
     type: object
+  request.UpdateKostRequest:
+    properties:
+      alamat:
+        type: string
+      namaKost:
+        type: string
+      pemilik:
+        type: integer
+      typeKost:
+        type: string
+    type: object
+  response.KostResponse:
+    properties:
+      alamat:
+        type: string
+      namaKost:
+        type: string
+      pemilik:
+        type: string
+      typeKost:
+        type: string
+    type: object
   response.SignUpResponse:
     properties:
       password:
         type: string
       username:
+        type: string
+    type: object
+  response.ViewKostResponse:
+    properties:
+      alamat:
+        type: string
+      namaKost:
+        type: string
+      pemilik:
+        type: string
+      typeKost:
         type: string
     type: object
 info:
@@ -30,38 +74,94 @@ info:
   title: AdaKost API
   version: "1.0"
 paths:
-  /hello:
+  /kost:
     get:
       consumes:
       - application/json
-      description: API ini mengembalikan pesan Hello World
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Menampilkan pesan Hello World
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ViewKostResponse'
+              type: object
       tags:
       - kost-controller
-  /kamarHello:
-    get:
+    post:
       consumes:
       - application/json
-      description: API ini mengembalikan pesan Hello World
+      parameters:
+      - description: Data Kost
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddKostRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Menampilkan pesan Hello World
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.KostResponse'
+              type: object
+      tags:
+      - kost-controller
+  /kost/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Kost
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      tags:
+      - kost-controller
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Kost
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data Kost
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateKostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.KostResponse'
+              type: object
       tags:
       - kost-controller
   /signup:

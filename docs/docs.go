@@ -15,9 +15,8 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/hello": {
+        "/kost": {
             "get": {
-                "description": "API ini mengembalikan pesan Hello World",
                 "consumes": [
                     "application/json"
                 ],
@@ -27,23 +26,72 @@ const docTemplate = `{
                 "tags": [
                     "kost-controller"
                 ],
-                "summary": "Menampilkan pesan Hello World",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.ViewKostResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kost-controller"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data Kost",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddKostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.KostResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
-        "/kamarHello": {
-            "get": {
-                "description": "API ini mengembalikan pesan Hello World",
+        "/kost/{id}": {
+            "put": {
                 "consumes": [
                     "application/json"
                 ],
@@ -53,15 +101,69 @@ const docTemplate = `{
                 "tags": [
                     "kost-controller"
                 ],
-                "summary": "Menampilkan pesan Hello World",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Kost",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data Kost",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateKostRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.KostResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kost-controller"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Kost",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
                         }
                     }
                 }
@@ -125,6 +227,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AddKostRequest": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "namaKost": {
+                    "type": "string"
+                },
+                "pemilik": {
+                    "type": "integer"
+                },
+                "typeKost": {
+                    "type": "string"
+                }
+            }
+        },
         "request.RegisterRequest": {
             "type": "object",
             "properties": {
@@ -139,6 +258,40 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateKostRequest": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "namaKost": {
+                    "type": "string"
+                },
+                "pemilik": {
+                    "type": "integer"
+                },
+                "typeKost": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.KostResponse": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "namaKost": {
+                    "type": "string"
+                },
+                "pemilik": {
+                    "type": "string"
+                },
+                "typeKost": {
+                    "type": "string"
+                }
+            }
+        },
         "response.SignUpResponse": {
             "type": "object",
             "properties": {
@@ -146,6 +299,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ViewKostResponse": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "namaKost": {
+                    "type": "string"
+                },
+                "pemilik": {
+                    "type": "string"
+                },
+                "typeKost": {
                     "type": "string"
                 }
             }
