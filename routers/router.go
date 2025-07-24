@@ -3,6 +3,7 @@ package routers
 import (
 	kamarcontroller "aplikasi-adakost-be/modules/kamar/controller"
 	kostcontroller "aplikasi-adakost-be/modules/kost/controller"
+	transcationcontroller "aplikasi-adakost-be/modules/transaction/controller"
 	usercontroller "aplikasi-adakost-be/modules/user/controller"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,10 @@ func SetupRouters() *gin.Engine {
 		api.PUT("/kamar/:id", kamarcontroller.UpdateKamar)
 		api.DELETE("/kamar/:id", kamarcontroller.DeleteKamar)
 		api.GET("/kamar", kamarcontroller.GetAllKamar)
+
+		// TRANSACTION
+		api.POST("/transaction-booking/:id", transcationcontroller.SaveOrderBooking)
+		api.PUT("/transaction-booking-cancel/:id", transcationcontroller.CancelOrderBooking)
 	}
 	url := ginSwagger.URL("http://localhost:8080/v3/api-docs")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))

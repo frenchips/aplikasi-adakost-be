@@ -28,7 +28,7 @@ func NewKamarService(repo repository.KamarRepository) KamarService {
 func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest) (kamarresponse.KamarResponse, error) {
 
 	kamar := kamarmodel.Kamar{
-		NomorKamar:  req.NomorKamar,
+		NamaKamar:   req.NamaKamar,
 		HargaKamar:  req.HargaKamar,
 		StatusKamar: req.StatusKamar,
 		Kost: kostmodel.Kost{
@@ -44,7 +44,7 @@ func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest) (kamarresponse
 	}
 
 	resp := kamarresponse.KamarResponse{
-		NomorKamar:  saveKamar.NomorKamar,
+		NomorKamar:  saveKamar.NamaKamar,
 		HargaKamar:  saveKamar.HargaKamar,
 		StatusKamar: saveKamar.StatusKamar,
 		Kost: kostresponse.KostResponse{
@@ -85,7 +85,7 @@ func (u *kamarService) UpdateKamar(req kamarrequest.UpdateKamarRequest, id int) 
 	}
 
 	resp := kamarresponse.KamarResponse{
-		NomorKamar:  saveUser.NomorKamar,
+		NomorKamar:  saveUser.NamaKamar,
 		HargaKamar:  saveUser.HargaKamar,
 		StatusKamar: saveUser.StatusKamar,
 		Kost: kostresponse.KostResponse{

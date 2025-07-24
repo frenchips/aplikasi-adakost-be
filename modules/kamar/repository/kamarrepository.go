@@ -12,6 +12,8 @@ type KamarRepository interface {
 	UpdateKamar(kamar kamarmodel.Kamar, id int) (kamarmodel.Kamar, error)
 	DeleteKamar(id int) error
 	GetAllKost(kamar response.GetKamarResponse) (result []response.GetKamarResponse, err error)
+	UpdateKostKamar(kamar kamarmodel.Kamar, id int) (kamarmodel.Kamar, error)
+	UpdateKamarStatus(kamarId int, status string) error
 }
 
 type kamarRepository struct {
@@ -26,8 +28,8 @@ func (k *kamarRepository) InsertKamar(kamar kamarmodel.Kamar) (kamarmodel.Kamar,
 	now := time.Now()
 	createBy := "Admin"
 
-	sql := "INSERT INTO adk_kamar(kost_id, nomor_kamar, harga_per_bulan, status_kamar, created_at, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
-	errs := k.db.QueryRow(sql, &kamar.Kost.Id, &kamar.NomorKamar, &kamar.HargaKamar, &kamar.StatusKamar, &now, &createBy).Scan(&kamar.Id)
+	sql := "INSERT INTO adk_kamar(kost_id, nama_kamar, harga_per_bulan, status_kamar, created_at, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
+	errs := k.db.QueryRow(sql, &kamar.Kost.Id, &kamar.NamaKamar, &kamar.HargaKamar, &kamar.StatusKamar, &now, &createBy).Scan(&kamar.Id)
 	if errs != nil {
 		panic(errs)
 	}
@@ -69,6 +71,32 @@ func (k *kamarRepository) UpdateKamar(kamar kamarmodel.Kamar, id int) (kamarmode
 	return kamar, nil
 }
 
+func (k *kamarRepository) UpdateKostKamar(kamar kamarmodel.Kamar, id int) (kamarmodel.Kamar, error) {
+	now := time.Now()
+	modifiedBy := "Admin"
+
+	sql := "UPDATE adk_kamar SET  status_kamar = $1, modified_at = $2,  modified_by = $3 WHERE id = $4 RETURNING id"
+	errs := k.db.QueryRow(sql, &kamar.StatusKamar, &now, &modifiedBy, id).Scan(&kamar.Id)
+	if errs != nil {
+		panic(errs)
+	}
+
+	kamar.ModifiedBy = modifiedBy
+	kamar.ModifiedAt = now
+
+	return kamar, nil
+}
+
+func (k *kamarRepository) UpdateKamarStatus(kamarId int, status string) error {
+	now := time.Now()
+	modifiedBy := "Admin"
+	_, err := k.db.Exec(
+		"UPDATE adk_kamar SET status_kamar = $1, modified_at = $2, modified_by = $3 WHERE id = $4",
+		status, now, modifiedBy, kamarId,
+	)
+	return err
+}
+
 func (k *kamarRepository) DeleteKamar(id int) error {
 
 	sql := "DELETE FROM adk_kamar WHERE id = $1"
@@ -81,7 +109,7 @@ func (k *kamarRepository) DeleteKamar(id int) error {
 }
 
 func (k *kamarRepository) GetAllKost(kamar response.GetKamarResponse) (result []response.GetKamarResponse, err error) {
-	sql := "select ak.nomor_kamar, ak.harga_per_bulan, ak.status_kamar  from adk_kamar ak  ORDER BY ak.id ASC"
+	sql := "select ak.nama_kamar, ak.harga_per_bulan, ak.status_kamar  from adk_kamar ak  ORDER BY ak.id ASC"
 	rows, err := k.db.Query(sql)
 	if err != nil {
 		return

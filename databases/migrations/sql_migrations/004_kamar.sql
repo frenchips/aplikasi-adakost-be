@@ -3,7 +3,7 @@
 create table adk_kamar(
 	id serial primary key,
 	kost_id int not null,
-	nomor_kamar varchar(64) not null,
+	nama_kamar varchar(64) not null,
     harga_per_bulan int not null,
     status_kamar varchar(64) not null,
     created_at timestamp not null,

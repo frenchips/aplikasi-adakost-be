@@ -19,15 +19,41 @@ definitions:
       typeKost:
         type: string
     type: object
+  request.BookingSaveRequest:
+    properties:
+      detailPenghuni:
+        items:
+          $ref: '#/definitions/request.PenghuniRequest'
+        type: array
+      jumlahPenghuni:
+        type: integer
+      kamarId:
+        type: integer
+      userId:
+        type: integer
+    type: object
   request.KamarRequest:
     properties:
       hargaKamar:
         type: integer
       kostId:
         type: integer
-      nomorKamar:
+      namaKamar:
         type: string
       statusKamar:
+        type: string
+    type: object
+  request.PenghuniRequest:
+    properties:
+      jenisKelamin:
+        type: string
+      namaPenghuni:
+        type: string
+      nomorHp:
+        type: integer
+      nomorKtp:
+        type: string
+      status:
         type: string
     type: object
   request.RegisterRequest:
@@ -59,6 +85,19 @@ definitions:
       typeKost:
         type: string
     type: object
+  response.BookingSaveResponse:
+    properties:
+      detailPenghuni:
+        items:
+          $ref: '#/definitions/response.PenghuniResponse'
+        type: array
+      jumlahPenghuni:
+        type: integer
+      namaKost:
+        type: string
+      statusBooking:
+        type: string
+    type: object
   response.KamarResponse:
     properties:
       hargaKamar:
@@ -79,6 +118,19 @@ definitions:
       pemilik:
         type: string
       typeKost:
+        type: string
+    type: object
+  response.PenghuniResponse:
+    properties:
+      jenisKelamin:
+        type: string
+      namaPenghuni:
+        type: string
+      nomorHp:
+        type: integer
+      nomorKtp:
+        type: string
+      status:
         type: string
     type: object
   response.SignUpResponse:
@@ -305,4 +357,58 @@ paths:
               type: object
       tags:
       - user-controller
+  /transaction-booking-cancel/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Booking
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.BookingSaveResponse'
+              type: object
+      tags:
+      - transaction-controller
+  /transaction-booking/{id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Kost
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data Kost
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.BookingSaveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.BookingSaveResponse'
+              type: object
+      tags:
+      - transaction-controller
 swagger: "2.0"

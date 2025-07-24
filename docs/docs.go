@@ -354,6 +354,99 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/transaction-booking-cancel/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction-controller"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Booking",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.BookingSaveResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction-booking/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction-controller"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Kost",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data Kost",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.BookingSaveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.BookingSaveResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -386,6 +479,26 @@ const docTemplate = `{
                 }
             }
         },
+        "request.BookingSaveRequest": {
+            "type": "object",
+            "properties": {
+                "detailPenghuni": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.PenghuniRequest"
+                    }
+                },
+                "jumlahPenghuni": {
+                    "type": "integer"
+                },
+                "kamarId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
         "request.KamarRequest": {
             "type": "object",
             "properties": {
@@ -395,10 +508,30 @@ const docTemplate = `{
                 "kostId": {
                     "type": "integer"
                 },
-                "nomorKamar": {
+                "namaKamar": {
                     "type": "string"
                 },
                 "statusKamar": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.PenghuniRequest": {
+            "type": "object",
+            "properties": {
+                "jenisKelamin": {
+                    "type": "string"
+                },
+                "namaPenghuni": {
+                    "type": "string"
+                },
+                "nomorHp": {
+                    "type": "integer"
+                },
+                "nomorKtp": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -448,6 +581,26 @@ const docTemplate = `{
                 }
             }
         },
+        "response.BookingSaveResponse": {
+            "type": "object",
+            "properties": {
+                "detailPenghuni": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.PenghuniResponse"
+                    }
+                },
+                "jumlahPenghuni": {
+                    "type": "integer"
+                },
+                "namaKost": {
+                    "type": "string"
+                },
+                "statusBooking": {
+                    "type": "string"
+                }
+            }
+        },
         "response.KamarResponse": {
             "type": "object",
             "properties": {
@@ -478,6 +631,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "typeKost": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.PenghuniResponse": {
+            "type": "object",
+            "properties": {
+                "jenisKelamin": {
+                    "type": "string"
+                },
+                "namaPenghuni": {
+                    "type": "string"
+                },
+                "nomorHp": {
+                    "type": "integer"
+                },
+                "nomorKtp": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }

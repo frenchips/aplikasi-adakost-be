@@ -8,7 +8,7 @@ import (
 type Kamar struct {
 	Id          int        `json:"id"`
 	Kost        model.Kost `json:"kost"`
-	NomorKamar  string     `json:"nomorKamar"`
+	NamaKamar   string     `json:"namaKamar"`
 	HargaKamar  int        `json:"hargaKamar"`
 	StatusKamar string     `json:"statusKamar"`
 	CreatedAt   time.Time  `json:"createdAt"`

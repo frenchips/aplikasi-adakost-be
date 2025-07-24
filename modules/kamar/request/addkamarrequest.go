@@ -1,7 +1,7 @@
 package request
 
 type KamarRequest struct {
-	NomorKamar  string `json:"nomorKamar"`
+	NamaKamar   string `json:"namaKamar"`
 	HargaKamar  int    `json:"hargaKamar"`
 	StatusKamar string `json:"statusKamar"`
 	KostId      int    `json:"kostId"`

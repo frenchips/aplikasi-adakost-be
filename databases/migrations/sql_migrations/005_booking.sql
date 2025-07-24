@@ -5,7 +5,7 @@ create table adk_booking(
 	user_id int not null,
 	kamar_id int not null,
     tanggal_mulai timestamp not null,
-    tanggal_akhir varchar(64) not null,
+    tanggal_akhir timestamp ,
     jumlah_penghuni int not null,
     status_booking varchar(64) not null,
     created_at timestamp not null,
