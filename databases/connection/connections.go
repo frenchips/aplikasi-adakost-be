@@ -19,7 +19,7 @@ var (
 
 func DbConnection() {
 
-	err = godotenv.Load("config/.env")
+	_ = godotenv.Load("config/.env")
 	if err != nil {
 		panic("Error loading .env file")
 	}
