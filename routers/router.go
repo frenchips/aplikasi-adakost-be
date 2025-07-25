@@ -61,10 +61,10 @@ func SetupRouters() *gin.Engine {
 		c.File("./docs/swagger.json")
 	})
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "API is running!",
-		})
-	})
+	// r.GET("/", func(c *gin.Context) {
+	// 	c.JSON(200, gin.H{
+	// 		"message": "API is running!",
+	// 	})
+	// })
 	return r
 }
