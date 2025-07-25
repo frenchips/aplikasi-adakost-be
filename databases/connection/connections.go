@@ -24,11 +24,11 @@ func DbConnection() {
 		panic("Error loading .env file")
 	}
 
-	viper.Set("db_host", os.Getenv("DB_HOST"))
-	viper.Set("db_port", os.Getenv("DB_PORT"))
-	viper.Set("db_user", os.Getenv("DB_USER"))
-	viper.Set("db_password", os.Getenv("DB_PASSWORD"))
-	viper.Set("db_name", os.Getenv("DB_NAME"))
+	viper.Set("db_host", os.Getenv("PGHOST"))
+	viper.Set("db_port", os.Getenv("PGPORT"))
+	viper.Set("db_user", os.Getenv("PGUSER"))
+	viper.Set("db_password", os.Getenv("PGPASSWORD"))
+	viper.Set("db_name", os.Getenv("PGDATABASE"))
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		viper.GetString("db_host"),
