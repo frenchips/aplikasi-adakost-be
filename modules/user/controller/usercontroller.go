@@ -6,6 +6,7 @@ import (
 	"aplikasi-adakost-be/modules/user/repository"
 	"aplikasi-adakost-be/modules/user/request"
 	"aplikasi-adakost-be/modules/user/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,4 +37,29 @@ func SaveRegister(ctx *gin.Context) {
 	}
 
 	common.GenerateSuccessResponseWithData(ctx, "Successfully signup", responseData)
+}
+
+// @Tags user-controller
+// @Accept json
+// @Produce json
+// @Param user body request.Login true "Data user"
+// @Success 200 {object} common.APIResponse
+// @Router /login [post]
+func Login(c *gin.Context) {
+	var req request.Login
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid login data"})
+		return
+	}
+
+	repo := repository.NewUsersRepo(connection.DBConnections)
+	service := service.NewUserService(repo)
+
+	token, err := service.Login(req)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }

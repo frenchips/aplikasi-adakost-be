@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"aplikasi-adakost-be/middleware"
 	kamarcontroller "aplikasi-adakost-be/modules/kamar/controller"
 	kostcontroller "aplikasi-adakost-be/modules/kost/controller"
 	transcationcontroller "aplikasi-adakost-be/modules/transaction/controller"
@@ -18,9 +19,14 @@ func SetupRouters() *gin.Engine {
 	{
 		// LOGIN DAN REGISTER
 		api.POST("/signup", usercontroller.SaveRegister)
+		api.POST("/login", usercontroller.Login)
 
 		// KOST
-		api.POST("/kost", kostcontroller.AddKost)
+		api.Use(middleware.JwtMiddleware())
+		{
+			api.POST("/kost", middleware.RoleMiddleware("pemilik"), kostcontroller.AddKost)
+		}
+
 		api.PUT("/kost/:id", kostcontroller.UpdateKost)
 		api.GET("/kost", kostcontroller.GetAllKost)
 		api.DELETE("/kost/:id", kostcontroller.DeleteKost)

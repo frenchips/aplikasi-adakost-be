@@ -1,6 +1,7 @@
 package service
 
 import (
+	"aplikasi-adakost-be/middleware"
 	"aplikasi-adakost-be/modules/user/model"
 	"aplikasi-adakost-be/modules/user/repository"
 	"aplikasi-adakost-be/modules/user/request"
@@ -10,8 +11,11 @@ import (
 	"time"
 )
 
+const Bearer = "Bearer "
+
 type UserService interface {
 	SaveRegisterUser(req request.RegisterRequest) (response.SignUpResponse, error)
+	Login(request request.Login) (model.UserLogin, error)
 }
 
 type userService struct {
@@ -54,4 +58,38 @@ func (u *userService) SaveRegisterUser(req request.RegisterRequest) (response.Si
 	}
 
 	return resp, nil
+}
+
+func (s *userService) Login(request request.Login) (model.UserLogin, error) {
+
+	userLogin := model.UserLogin{
+		Username: request.Username,
+		Password: request.Password,
+	}
+
+	userData, err := s.repo.Login(userLogin)
+	if err != nil {
+		return model.UserLogin{}, fmt.Errorf("login failed: %w", err)
+	}
+
+	// Pastikan ada roles dan ambil role pertama (atau sesuai kebutuhan)
+	if len(userData.Roles) == 0 {
+		return model.UserLogin{}, fmt.Errorf("user has no roles assigned")
+	}
+
+	roleName := userData.Roles[0].RoleName
+
+	now := time.Now()
+	expiry := now.Add(time.Hour * 1) // 1 jam dari sekarang
+
+	token, err := middleware.GenerateJwtToken(userData.Id, roleName)
+	if err != nil {
+		return model.UserLogin{}, fmt.Errorf("token generation failed: %w", err)
+	}
+
+	userData.LoginAt = now
+	userData.ExpiredAt = expiry
+	userData.Token = Bearer + token
+
+	return userData, nil
 }

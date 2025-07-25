@@ -7,6 +7,7 @@ import (
 
 type UsersRepository interface {
 	Register(user model.Users) (model.Users, error)
+	Login(user model.UserLogin) (model.UserLogin, error)
 }
 
 type usersRepository struct {
@@ -26,4 +27,18 @@ func (u *usersRepository) Register(user model.Users) (model.Users, error) {
 	}
 
 	return user, nil
+}
+
+func (u *usersRepository) Login(user model.UserLogin) (model.UserLogin, error) {
+
+	var rolesName string
+	sql := `SELECT au.id, au.username, au.password, ar.name FROM adk_users au JOIN adk_roles ar ON au.role_id = ar.id WHERE au.username = $1 and au.password = $2`
+	err := u.db.QueryRow(sql, user.Username, user.Password).Scan(&user.Id, &user.Username, &user.Password, &rolesName)
+	if err != nil {
+		return model.UserLogin{}, err
+	}
+	user.Roles = []model.Roles{{RoleName: rolesName}}
+
+	return user, nil
+
 }

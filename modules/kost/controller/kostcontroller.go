@@ -18,6 +18,7 @@ import (
 // @Param body body request.AddKostRequest true "Data Kost"
 // @Success 200 {object} common.APIResponse{data=response.KostResponse}
 // @Router /kost [post]
+// @Security BearerAuth
 func AddKost(ctx *gin.Context) {
 	var input request.AddKostRequest
 

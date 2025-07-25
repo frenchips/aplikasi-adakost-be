@@ -43,6 +43,13 @@ definitions:
       statusKamar:
         type: string
     type: object
+  request.Login:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   request.PenghuniRequest:
     properties:
       jenisKelamin:
@@ -194,8 +201,7 @@ definitions:
     type: object
 info:
   contact: {}
-  description: API dokumentasi untuk Aplikasi AdaKost
-  title: AdaKost API
+  title: Aplikasi Booking Kost API
   version: "1.0"
 paths:
   /kamar:
@@ -323,6 +329,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.KostResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - kost-controller
   /kost/{id}:
@@ -391,6 +399,26 @@ paths:
               type: object
       tags:
       - kost-controller
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Data user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/request.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      tags:
+      - user-controller
   /signup:
     post:
       consumes:
@@ -517,4 +545,10 @@ paths:
               type: object
       tags:
       - transaction-controller
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer " followed by your JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

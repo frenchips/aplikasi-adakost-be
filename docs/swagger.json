@@ -1,8 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API dokumentasi untuk Aplikasi AdaKost",
-        "title": "AdaKost API",
+        "title": "Aplikasi Booking Kost API",
         "contact": {},
         "version": "1.0"
     },
@@ -183,6 +182,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -325,6 +329,38 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-controller"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.Login"
+                        }
                     }
                 ],
                 "responses": {
@@ -624,6 +660,17 @@
                 }
             }
         },
+        "request.Login": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "request.PenghuniRequest": {
             "type": "object",
             "properties": {
@@ -853,6 +900,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer \" followed by your JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }
