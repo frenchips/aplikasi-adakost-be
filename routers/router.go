@@ -21,28 +21,34 @@ func SetupRouters() *gin.Engine {
 		api.POST("/signup", usercontroller.SaveRegister)
 		api.POST("/login", usercontroller.Login)
 
-		// KOST
+		// KOST ROLE PEMILIK
 		api.Use(middleware.JwtMiddleware())
 		{
 			api.POST("/kost", middleware.RoleMiddleware("pemilik"), kostcontroller.AddKost)
+			api.PUT("/kost/:id", middleware.RoleMiddleware("pemilik"), kostcontroller.UpdateKost)
+			api.GET("/kost", middleware.RoleMiddleware("pemilik"), kostcontroller.GetAllKost)
+			api.DELETE("/kost/:id", middleware.RoleMiddleware("pemilik"), kostcontroller.DeleteKost)
+			api.GET("/kost/kamar", middleware.RoleMiddleware("pemilik"), middleware.RoleMiddleware("penyewa"), kostcontroller.GetKamarKost)
 		}
 
-		api.PUT("/kost/:id", kostcontroller.UpdateKost)
-		api.GET("/kost", kostcontroller.GetAllKost)
-		api.DELETE("/kost/:id", kostcontroller.DeleteKost)
-		api.GET("/kost/kamar", kostcontroller.GetKamarKost)
-
 		// KAMAR
-		api.POST("/kamar", kamarcontroller.AddKamar)
-		api.PUT("/kamar/:id", kamarcontroller.UpdateKamar)
-		api.DELETE("/kamar/:id", kamarcontroller.DeleteKamar)
-		api.GET("/kamar", kamarcontroller.GetAllKamar)
+		api.Use(middleware.JwtMiddleware())
+		{
+			api.POST("/kamar", middleware.RoleMiddleware("pemilik"), kamarcontroller.AddKamar)
+			api.PUT("/kamar/:id", middleware.RoleMiddleware("pemilik"), kamarcontroller.UpdateKamar)
+			api.DELETE("/kamar/:id", middleware.RoleMiddleware("pemilik"), kamarcontroller.DeleteKamar)
+			api.GET("/kamar", middleware.RoleMiddleware("pemilik"), kamarcontroller.GetAllKamar)
+		}
 
 		// TRANSACTION
-		api.POST("/transaction-booking/:id", transcationcontroller.SaveOrderBooking)
-		api.PUT("/transaction-booking-cancel/:id", transcationcontroller.CancelOrderBooking)
-		api.GET("/transaction-booking/:id", transcationcontroller.GetBookingList)
-		api.GET("/transaction-booking/users/:id", transcationcontroller.GetUsersBookingList)
+		api.Use(middleware.JwtMiddleware())
+		{
+			api.POST("/transaction-booking/:id", middleware.RoleMiddleware("penyewa"), transcationcontroller.SaveOrderBooking)
+			api.PUT("/transaction-booking-cancel/:id", middleware.RoleMiddleware("penyewa"), transcationcontroller.CancelOrderBooking)
+			api.GET("/transaction-booking/:id", middleware.RoleMiddleware("penyewa"), middleware.RoleMiddleware("penyewa"), transcationcontroller.GetBookingList)
+			api.GET("/transaction-booking/users/:id", middleware.RoleMiddleware("penyewa"), transcationcontroller.GetUsersBookingList)
+		}
+
 	}
 	url := ginSwagger.URL("http://localhost:8080/v3/api-docs")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))

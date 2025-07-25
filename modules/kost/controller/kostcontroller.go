@@ -3,6 +3,7 @@ package controller
 import (
 	"aplikasi-adakost-be/common"
 	"aplikasi-adakost-be/databases/connection"
+	"aplikasi-adakost-be/middleware"
 	"aplikasi-adakost-be/modules/kost/repository"
 	"aplikasi-adakost-be/modules/kost/request"
 	"aplikasi-adakost-be/modules/kost/response"
@@ -28,11 +29,24 @@ func AddKost(ctx *gin.Context) {
 		return
 	}
 
+	// Ambil user dari context
+	claimsInterface, exists := ctx.Get("user")
+	if !exists {
+		common.GenerateErrorResponse(ctx, "Unauthorized: token not found")
+		return
+	}
+
+	claims, ok := claimsInterface.(*middleware.Claims)
+	if !ok {
+		common.GenerateErrorResponse(ctx, "Invalid token data")
+		return
+	}
+
 	// Buat repo dan service
 	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
-	responseData, err := service.InsertKost(input)
+	responseData, err := service.InsertKost(input, claims.Username)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
@@ -48,6 +62,7 @@ func AddKost(ctx *gin.Context) {
 // @Param body body request.UpdateKostRequest true "Data Kost"
 // @Success 200 {object} common.APIResponse{data=response.KostResponse}
 // @Router /kost/{id} [put]
+// @Security BearerAuth
 func UpdateKost(ctx *gin.Context) {
 	var input request.UpdateKostRequest
 
@@ -57,13 +72,26 @@ func UpdateKost(ctx *gin.Context) {
 		return
 	}
 
+	// Ambil user dari context
+	claimsInterface, exists := ctx.Get("user")
+	if !exists {
+		common.GenerateErrorResponse(ctx, "Unauthorized: token not found")
+		return
+	}
+
+	claims, ok := claimsInterface.(*middleware.Claims)
+	if !ok {
+		common.GenerateErrorResponse(ctx, "Invalid token data")
+		return
+	}
+
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
 	// Buat repo dan service
 	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
-	responseData, err := service.UpdateKost(input, id)
+	responseData, err := service.UpdateKost(input, id, claims.Username)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
@@ -77,6 +105,7 @@ func UpdateKost(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} common.APIResponse{data=response.ViewKostResponse}
 // @Router /kost [GET]
+// @Security BearerAuth
 func GetAllKost(ctx *gin.Context) {
 	var input response.ViewKostResponse
 
@@ -99,6 +128,7 @@ func GetAllKost(ctx *gin.Context) {
 // @Param id path int true "ID Kost"
 // @Success 200 {object} common.APIResponse
 // @Router /kost/{id} [delete]
+// @Security BearerAuth
 func DeleteKost(ctx *gin.Context) {
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
@@ -121,6 +151,7 @@ func DeleteKost(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} common.APIResponse{data=response.KamarKostReponse}
 // @Router /kost/kamar [get]
+// @Security BearerAuth
 func GetKamarKost(ctx *gin.Context) {
 
 	// Buat repo dan service

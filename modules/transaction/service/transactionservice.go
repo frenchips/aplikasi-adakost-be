@@ -20,8 +20,8 @@ const (
 )
 
 type TransactionService interface {
-	SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int) (bookingresponse.BookingSaveResponse, error)
-	CancelOrderBooking(id int) error
+	SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int, username string) (bookingresponse.BookingSaveResponse, error)
+	CancelOrderBooking(id int, username string) error
 	GetDetailBooking(id int) ([]response.BookingResponse, error)
 	GetDetailUserBooking(id int) ([]response.BookingResponse, error)
 }
@@ -35,7 +35,7 @@ func NewTransactionService(repo bookingrepository.TransactionRepository, kamarRe
 	return &transactionService{repo: repo, kamarRepo: kamarRepo}
 }
 
-func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int) (bookingresponse.BookingSaveResponse, error) {
+func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int, username string) (bookingresponse.BookingSaveResponse, error) {
 
 	if request.Jumlah > 2 {
 		return bookingresponse.BookingSaveResponse{}, fmt.Errorf("maksimal penghuni 2 tidak boleh lebih %d", request.Jumlah)
@@ -108,7 +108,7 @@ func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSave
 	return resp, nil
 }
 
-func (t *transactionService) CancelOrderBooking(id int) error {
+func (t *transactionService) CancelOrderBooking(id int, username string) error {
 
 	existing, err := t.repo.FindBookingById(id)
 	if err != nil {
@@ -119,7 +119,7 @@ func (t *transactionService) CancelOrderBooking(id int) error {
 		return fmt.Errorf("booking sudah dibatalkan sebelumnya")
 	}
 
-	err = t.repo.UpdateBookingStatus(id, StatusCancel, "Admin") // atau ambil dari session user
+	err = t.repo.UpdateBookingStatus(id, StatusCancel, username)
 	if err != nil {
 		return fmt.Errorf("gagal membatalkan booking: %v", err)
 	}

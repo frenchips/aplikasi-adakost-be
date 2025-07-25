@@ -215,6 +215,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
       tags:
       - kamar-controller
     post:
@@ -239,6 +241,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.KamarResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - kamar-controller
   /kamar/{id}:
@@ -258,6 +262,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
       tags:
       - kamar-controller
     put:
@@ -287,6 +293,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.KamarResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - kamar-controller
   /kost:
@@ -305,6 +313,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.ViewKostResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - kost-controller
     post:
@@ -350,6 +360,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
       tags:
       - kost-controller
     put:
@@ -379,6 +391,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.KostResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - kost-controller
   /kost/kamar:
@@ -397,6 +411,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.KamarKostReponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - kost-controller
   /login:
@@ -466,6 +482,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.BookingSaveResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - transaction-controller
   /transaction-booking/{id}:
@@ -490,6 +508,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.BookingResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - transaction-controller
     post:
@@ -519,6 +539,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.BookingSaveResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - transaction-controller
   /transaction-booking/users/{id}:
@@ -543,6 +565,8 @@ paths:
                 data:
                   $ref: '#/definitions/response.BookingResponse'
               type: object
+      security:
+      - BearerAuth: []
       tags:
       - transaction-controller
 securityDefinitions:

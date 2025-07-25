@@ -10,8 +10,8 @@ import (
 )
 
 type KamarService interface {
-	InsertKamar(req kamarrequest.KamarRequest) (kamarresponse.KamarResponse, error)
-	UpdateKamar(req kamarrequest.UpdateKamarRequest, id int) (kamarresponse.KamarResponse, error)
+	InsertKamar(req kamarrequest.KamarRequest, username string) (kamarresponse.KamarResponse, error)
+	UpdateKamar(req kamarrequest.UpdateKamarRequest, id int, username string) (kamarresponse.KamarResponse, error)
 	DeleteKamar(id int) error
 	GetAllKamar(kamar kamarresponse.GetKamarResponse) (result []kamarresponse.GetKamarResponse, err error)
 }
@@ -24,7 +24,7 @@ func NewKamarService(repo repository.KamarRepository) KamarService {
 	return &kamarService{repo: repo}
 }
 
-func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest) (kamarresponse.KamarResponse, error) {
+func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest, username string) (kamarresponse.KamarResponse, error) {
 
 	kamar := kamarmodel.Kamar{
 		NamaKamar:   req.NamaKamar,
@@ -34,7 +34,7 @@ func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest) (kamarresponse
 			Id: req.KostId,
 		},
 		CreatedAt: time.Now(),
-		CreatedBy: "admin",
+		CreatedBy: username,
 	}
 
 	saveKamar, err := k.repo.InsertKamar(kamar)
@@ -55,7 +55,7 @@ func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest) (kamarresponse
 	return resp, nil
 }
 
-func (u *kamarService) UpdateKamar(req kamarrequest.UpdateKamarRequest, id int) (kamarresponse.KamarResponse, error) {
+func (u *kamarService) UpdateKamar(req kamarrequest.UpdateKamarRequest, id int, username string) (kamarresponse.KamarResponse, error) {
 	// if req.NamaKost == "" {
 	// 	return response.KostResponse{}, errors.New("username tidak boleh kosong")
 	// }
@@ -75,7 +75,7 @@ func (u *kamarService) UpdateKamar(req kamarrequest.UpdateKamarRequest, id int) 
 			Id: req.KostId,
 		},
 		ModifiedAt: time.Now(),
-		ModifiedBy: "Admin",
+		ModifiedBy: username,
 	}
 
 	saveUser, err := u.repo.UpdateKamar(kamar, id)

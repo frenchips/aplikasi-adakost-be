@@ -13,9 +13,8 @@ create table adk_roles(
 
 INSERT INTO adk_roles (id, name, created_at, created_by)
 VALUES
-  (1, 'penyewa', now(), 'admin'),
-  (2, 'pemilik', now(), 'admin'),
-  (3, 'admin', now(), 'admin');
-
+  (1, 'penyewa', now(), 'SYSTEM'),
+  (2, 'pemilik', now(), 'SYSTEM')
+ 
 -- +migrate StatementEnd
 

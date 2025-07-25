@@ -44,7 +44,7 @@ func (u *userService) SaveRegisterUser(req request.RegisterRequest) (response.Si
 		Password:  req.Password,
 		RoleId:    req.RoleId,
 		CreatedAt: time.Now(),
-		CreatedBy: "Admin",
+		CreatedBy: "SYSTEM",
 	}
 
 	saveUser, err := u.repo.Register(user)
@@ -61,6 +61,14 @@ func (u *userService) SaveRegisterUser(req request.RegisterRequest) (response.Si
 }
 
 func (s *userService) Login(request request.Login) (model.UserLogin, error) {
+
+	if request.Username == "" {
+		return model.UserLogin{}, errors.New("username tidak boleh kosong")
+	}
+
+	if request.Password == "" {
+		return model.UserLogin{}, errors.New("password tidak boleh kosong")
+	}
 
 	userLogin := model.UserLogin{
 		Username: request.Username,
@@ -82,7 +90,7 @@ func (s *userService) Login(request request.Login) (model.UserLogin, error) {
 	now := time.Now()
 	expiry := now.Add(time.Hour * 1) // 1 jam dari sekarang
 
-	token, err := middleware.GenerateJwtToken(userData.Id, roleName)
+	token, err := middleware.GenerateJwtToken(userData.Id, userData.Username, roleName)
 	if err != nil {
 		return model.UserLogin{}, fmt.Errorf("token generation failed: %w", err)
 	}

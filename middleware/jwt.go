@@ -14,8 +14,9 @@ import (
 )
 
 type Claims struct {
-	UserID int    `json:"userId"`
-	Role   string `json:"role"`
+	UserID   int    `json:"userId"`
+	Username string `json:"username"`
+	Role     string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -57,12 +58,13 @@ func GetJwtTokenFromHeader(c *gin.Context) (tokenString string, err error) {
 	return parts[1], nil
 }
 
-func GenerateJwtToken(userId int, role string) (string, error) {
+func GenerateJwtToken(userId int, username string, role string) (string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 
 	claims := &Claims{
-		UserID: userId,
-		Role:   role,
+		UserID:   userId,
+		Username: username,
+		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
