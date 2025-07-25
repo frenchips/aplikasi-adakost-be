@@ -4,6 +4,7 @@ import (
 	"aplikasi-adakost-be/databases/connection"
 	"aplikasi-adakost-be/databases/migrations"
 	"aplikasi-adakost-be/routers"
+	"os"
 )
 
 // @title Aplikasi Booking Kost API
@@ -18,6 +19,13 @@ func main() {
 	connection.DbConnection()
 	migrations.DBMigrate(connection.DBConnections)
 	r := routers.SetupRouters()
-	r.Run(":8080")
+
+	// Ambil port dari env
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // fallback untuk lokal
+	}
+
+	r.Run(":" + port)
 	// Init()
 }
