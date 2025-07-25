@@ -16,6 +16,7 @@ type KostService interface {
 	UpdateKost(req request.UpdateKostRequest, id int) (response.KostResponse, error)
 	GetAllKost(kost response.ViewKostResponse) (result []response.ViewKostResponse, err error)
 	DeleteKost(id int) error
+	GetKostKamar() (result []response.KamarKostReponse, err error)
 }
 
 type kostService struct {
@@ -110,4 +111,8 @@ func (c *kostService) GetAllKost(kost response.ViewKostResponse) (result []respo
 
 func (c *kostService) DeleteKost(id int) error {
 	return c.repo.DeleteKost(id)
+}
+
+func (c *kostService) GetKostKamar() (result []response.KamarKostReponse, err error) {
+	return c.repo.GetKostKamar()
 }

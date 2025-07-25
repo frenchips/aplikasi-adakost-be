@@ -6,6 +6,7 @@ import (
 	bookingmodel "aplikasi-adakost-be/modules/transaction/model"
 	bookingrepository "aplikasi-adakost-be/modules/transaction/repository"
 	bookingrequest "aplikasi-adakost-be/modules/transaction/request"
+	"aplikasi-adakost-be/modules/transaction/response"
 	bookingresponse "aplikasi-adakost-be/modules/transaction/response"
 	usermodel "aplikasi-adakost-be/modules/user/model"
 	"fmt"
@@ -21,6 +22,8 @@ const (
 type TransactionService interface {
 	SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int) (bookingresponse.BookingSaveResponse, error)
 	CancelOrderBooking(id int) error
+	GetDetailBooking(id int) ([]response.BookingResponse, error)
+	GetDetailUserBooking(id int) ([]response.BookingResponse, error)
 }
 
 type transactionService struct {
@@ -127,4 +130,22 @@ func (t *transactionService) CancelOrderBooking(id int) error {
 	}
 
 	return nil
+}
+
+func (t *transactionService) GetDetailBooking(id int) ([]response.BookingResponse, error) {
+	result, err := t.repo.GetDetailBooking(id)
+	if err != nil {
+		return nil, fmt.Errorf("gagal menampilkan detail booking: %v", err)
+	}
+
+	return result, nil
+}
+
+func (t *transactionService) GetDetailUserBooking(id int) ([]response.BookingResponse, error) {
+	result, err := t.repo.GetDetailUsersBooking(id)
+	if err != nil {
+		return nil, fmt.Errorf("gagal menampilkan detail booking: %v", err)
+	}
+
+	return result, nil
 }

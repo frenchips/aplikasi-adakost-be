@@ -24,6 +24,7 @@ func SetupRouters() *gin.Engine {
 		api.PUT("/kost/:id", kostcontroller.UpdateKost)
 		api.GET("/kost", kostcontroller.GetAllKost)
 		api.DELETE("/kost/:id", kostcontroller.DeleteKost)
+		api.GET("/kost/kamar", kostcontroller.GetKamarKost)
 
 		// KAMAR
 		api.POST("/kamar", kamarcontroller.AddKamar)
@@ -34,6 +35,8 @@ func SetupRouters() *gin.Engine {
 		// TRANSACTION
 		api.POST("/transaction-booking/:id", transcationcontroller.SaveOrderBooking)
 		api.PUT("/transaction-booking-cancel/:id", transcationcontroller.CancelOrderBooking)
+		api.GET("/transaction-booking/:id", transcationcontroller.GetBookingList)
+		api.GET("/transaction-booking/users/:id", transcationcontroller.GetUsersBookingList)
 	}
 	url := ginSwagger.URL("http://localhost:8080/v3/api-docs")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))

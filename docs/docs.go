@@ -232,6 +232,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/kost/kamar": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kost-controller"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.KamarKostReponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/kost/{id}": {
             "put": {
                 "consumes": [
@@ -397,7 +430,89 @@ const docTemplate = `{
                 }
             }
         },
+        "/transaction-booking/users/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction-controller"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Booking",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.BookingResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/transaction-booking/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction-controller"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Booking",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.BookingResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -581,6 +696,32 @@ const docTemplate = `{
                 }
             }
         },
+        "response.BookingResponse": {
+            "type": "object",
+            "properties": {
+                "detailPenghuni": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.PenghuniResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jumlahPenghuni": {
+                    "type": "integer"
+                },
+                "namaKost": {
+                    "type": "string"
+                },
+                "statusBooking": {
+                    "type": "string"
+                },
+                "typeKost": {
+                    "type": "string"
+                }
+            }
+        },
         "response.BookingSaveResponse": {
             "type": "object",
             "properties": {
@@ -601,14 +742,51 @@ const docTemplate = `{
                 }
             }
         },
-        "response.KamarResponse": {
+        "response.GetKamarResponse": {
             "type": "object",
             "properties": {
                 "hargaKamar": {
                     "type": "integer"
                 },
-                "kost": {
-                    "$ref": "#/definitions/response.KostResponse"
+                "nomorKamar": {
+                    "type": "string"
+                },
+                "statusKamar": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.KamarKostReponse": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "detailKamar": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GetKamarResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "namaKost": {
+                    "type": "string"
+                },
+                "sisaKamar": {
+                    "type": "integer"
+                },
+                "typeKost": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.KamarResponse": {
+            "type": "object",
+            "properties": {
+                "hargaKamar": {
+                    "type": "integer"
                 },
                 "nomorKamar": {
                     "type": "string"

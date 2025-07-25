@@ -2,6 +2,7 @@ package repository
 
 import (
 	bookingmodel "aplikasi-adakost-be/modules/transaction/model"
+	"aplikasi-adakost-be/modules/transaction/response"
 	"database/sql"
 	"fmt"
 	"time"
@@ -11,6 +12,9 @@ type TransactionRepository interface {
 	SaveBooking(ordermodel bookingmodel.Booking, id int) (bookingmodel.Booking, error)
 	FindBookingById(id int) (bookingmodel.Booking, error)
 	UpdateBookingStatus(id int, status string, modifiedBy string) error
+	GetDetailBooking(id int) (result []response.BookingResponse, err error)
+	GetDetailBookingMember(id int) (result []response.PenghuniResponse, err error)
+	GetDetailUsersBooking(id int) (result []response.BookingResponse, err error)
 }
 
 type transactionRepository struct {
@@ -97,4 +101,122 @@ func (r *transactionRepository) UpdateBookingStatus(id int, status string, modif
 	query := "UPDATE adk_booking SET status_booking = $1, modified_at = $2, modified_by = $3 WHERE id = $4"
 	_, err := r.db.Exec(query, status, now, modifiedBy, id)
 	return err
+}
+
+func (t *transactionRepository) GetDetailBooking(id int) (result []response.BookingResponse, err error) {
+
+	query := `SELECT 
+				ab.id,
+				aks.nama_kost,
+				aks.type_kost,
+				ab.jumlah_penghuni,
+				ab.status_booking
+			FROM adk_booking ab 
+			JOIN adk_kamar ak ON ab.kamar_id = ak.id 
+			JOIN adk_kost aks ON ak.kost_id = aks.id
+			WHERE ab.id = $1`
+	rows, err := t.db.Query(query, id)
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var booking response.BookingResponse
+
+		err = rows.Scan(&booking.Id, &booking.NamaKost, &booking.TypeKost, &booking.JumlahPenghuni, &booking.StatusBooking)
+		if err != nil {
+			return
+		}
+
+		// Ambil detail penghuni berdasarkan booking ID
+		booking.DetailPenghuni, err = t.GetDetailBookingMember(booking.Id)
+		if err != nil {
+			return
+		}
+
+		if len(booking.DetailPenghuni) > 0 {
+			result = append(result, booking)
+		}
+
+	}
+
+	return
+}
+
+func (t *transactionRepository) GetDetailBookingMember(id int) (result []response.PenghuniResponse, err error) {
+
+	query := `
+			select 
+				abm.nama_penghuni,
+				abm.nomor_handphone,
+				abm.ktp_penghuni,
+				abm.jenis_kelamin,
+				abm.status_perkawinan
+			from adk_booking_member abm 
+			join adk_booking ab on abm.booking_id = ab.id  
+			where ab.id = $1`
+	rows, err := t.db.Query(query, id)
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var penghuni response.PenghuniResponse
+
+		err = rows.Scan(&penghuni.NamaPenghuni, &penghuni.NomorHp, &penghuni.NomorKtp, &penghuni.JenisKelamin, &penghuni.StatusPerkawinan)
+		if err != nil {
+			return
+		}
+
+		result = append(result, penghuni)
+	}
+
+	return
+}
+
+func (t *transactionRepository) GetDetailUsersBooking(id int) (result []response.BookingResponse, err error) {
+
+	query := `SELECT 
+				ab.id,
+				aks.nama_kost,
+				aks.type_kost,
+				ab.jumlah_penghuni,
+				ab.status_booking
+			FROM adk_booking ab 
+			JOIN adk_users au ON ab.user_id = au.id
+			JOIN adk_kamar ak ON ab.kamar_id = ak.id 
+			JOIN adk_kost aks ON ak.kost_id = aks.id
+			WHERE au.id = $1`
+	rows, err := t.db.Query(query, id)
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var booking response.BookingResponse
+
+		err = rows.Scan(&booking.Id, &booking.NamaKost, &booking.TypeKost, &booking.JumlahPenghuni, &booking.StatusBooking)
+		if err != nil {
+			return
+		}
+
+		// Ambil detail penghuni berdasarkan booking ID
+		booking.DetailPenghuni, err = t.GetDetailBookingMember(booking.Id)
+		if err != nil {
+			return
+		}
+
+		if len(booking.DetailPenghuni) > 0 {
+			result = append(result, booking)
+		}
+
+	}
+
+	return
 }

@@ -67,3 +67,55 @@ func CancelOrderBooking(ctx *gin.Context) {
 
 	common.GenerateSuccessResponseWithData(ctx, "Successfully cancel booking ", nil)
 }
+
+// @Tags transaction-controller
+// @Accept json
+// @Produce json
+// @Param id path int true "ID Booking"
+// @Success 200 {object} common.APIResponse{data=response.BookingResponse}
+// @Router /transaction-booking/{id} [get]
+func GetBookingList(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		common.GenerateErrorResponse(ctx, "ID tidak valid")
+		return
+	}
+
+	repo := transactionrepository.NewTransactionRepository(connection.DBConnections)
+	service := service.NewTransactionService(repo, nil)
+
+	bookings, err := service.GetDetailBooking(id)
+	if err != nil {
+		common.GenerateErrorResponse(ctx, err.Error())
+		return
+	}
+
+	common.GenerateSuccessResponseWithData(ctx, "Berhasil mengambil data booking", bookings)
+}
+
+// @Tags transaction-controller
+// @Accept json
+// @Produce json
+// @Param id path int true "ID Booking"
+// @Success 200 {object} common.APIResponse{data=response.BookingResponse}
+// @Router /transaction-booking/users/{id} [get]
+func GetUsersBookingList(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		common.GenerateErrorResponse(ctx, "ID tidak valid")
+		return
+	}
+
+	repo := transactionrepository.NewTransactionRepository(connection.DBConnections)
+	service := service.NewTransactionService(repo, nil)
+
+	bookings, err := service.GetDetailUserBooking(id)
+	if err != nil {
+		common.GenerateErrorResponse(ctx, err.Error())
+		return
+	}
+
+	common.GenerateSuccessResponseWithData(ctx, "Berhasil mengambil data booking", bookings)
+}

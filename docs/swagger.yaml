@@ -85,6 +85,23 @@ definitions:
       typeKost:
         type: string
     type: object
+  response.BookingResponse:
+    properties:
+      detailPenghuni:
+        items:
+          $ref: '#/definitions/response.PenghuniResponse'
+        type: array
+      id:
+        type: integer
+      jumlahPenghuni:
+        type: integer
+      namaKost:
+        type: string
+      statusBooking:
+        type: string
+      typeKost:
+        type: string
+    type: object
   response.BookingSaveResponse:
     properties:
       detailPenghuni:
@@ -98,12 +115,36 @@ definitions:
       statusBooking:
         type: string
     type: object
+  response.GetKamarResponse:
+    properties:
+      hargaKamar:
+        type: integer
+      nomorKamar:
+        type: string
+      statusKamar:
+        type: string
+    type: object
+  response.KamarKostReponse:
+    properties:
+      alamat:
+        type: string
+      detailKamar:
+        items:
+          $ref: '#/definitions/response.GetKamarResponse'
+        type: array
+      id:
+        type: integer
+      namaKost:
+        type: string
+      sisaKamar:
+        type: integer
+      typeKost:
+        type: string
+    type: object
   response.KamarResponse:
     properties:
       hargaKamar:
         type: integer
-      kost:
-        $ref: '#/definitions/response.KostResponse'
       nomorKamar:
         type: string
       statusKamar:
@@ -332,6 +373,24 @@ paths:
               type: object
       tags:
       - kost-controller
+  /kost/kamar:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.KamarKostReponse'
+              type: object
+      tags:
+      - kost-controller
   /signup:
     post:
       consumes:
@@ -382,6 +441,29 @@ paths:
       tags:
       - transaction-controller
   /transaction-booking/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Booking
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.BookingResponse'
+              type: object
+      tags:
+      - transaction-controller
     post:
       consumes:
       - application/json
@@ -408,6 +490,30 @@ paths:
             - properties:
                 data:
                   $ref: '#/definitions/response.BookingSaveResponse'
+              type: object
+      tags:
+      - transaction-controller
+  /transaction-booking/users/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Booking
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.BookingResponse'
               type: object
       tags:
       - transaction-controller

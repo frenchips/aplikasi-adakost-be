@@ -6,7 +6,6 @@ import (
 	kamarrequest "aplikasi-adakost-be/modules/kamar/request"
 	kamarresponse "aplikasi-adakost-be/modules/kamar/response"
 	kostmodel "aplikasi-adakost-be/modules/kost/model"
-	kostresponse "aplikasi-adakost-be/modules/kost/response"
 	"time"
 )
 
@@ -47,10 +46,10 @@ func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest) (kamarresponse
 		NomorKamar:  saveKamar.NamaKamar,
 		HargaKamar:  saveKamar.HargaKamar,
 		StatusKamar: saveKamar.StatusKamar,
-		Kost: kostresponse.KostResponse{
-			NamaKost: saveKamar.Kost.NamaKost,
-			Pemilik:  saveKamar.Kost.Users.Username,
-		},
+		// Kost: kostresponse.KostResponse{
+		// 	NamaKost: saveKamar.Kost.NamaKost,
+		// 	Pemilik:  saveKamar.Kost.Users.Username,
+		// },
 	}
 
 	return resp, nil
@@ -88,9 +87,9 @@ func (u *kamarService) UpdateKamar(req kamarrequest.UpdateKamarRequest, id int) 
 		NomorKamar:  saveUser.NamaKamar,
 		HargaKamar:  saveUser.HargaKamar,
 		StatusKamar: saveUser.StatusKamar,
-		Kost: kostresponse.KostResponse{
-			NamaKost: saveUser.Kost.NamaKost,
-		},
+		// Kost: kostresponse.KostResponse{
+		// 	NamaKost: saveUser.Kost.NamaKost,
+		// },
 	}
 
 	return resp, nil

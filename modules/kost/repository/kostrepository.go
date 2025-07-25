@@ -1,6 +1,8 @@
 package repository
 
 import (
+	kamarrepo "aplikasi-adakost-be/modules/kamar/repository"
+	kamarresponse "aplikasi-adakost-be/modules/kamar/response"
 	"aplikasi-adakost-be/modules/kost/model"
 	"aplikasi-adakost-be/modules/kost/response"
 	"database/sql"
@@ -12,13 +14,15 @@ type KostRepository interface {
 	UpdateKost(kost model.Kost, id int) (model.Kost, error)
 	GetAllKost(kost response.ViewKostResponse) (result []response.ViewKostResponse, err error)
 	DeleteKost(id int) error
+	GetKostKamar() (result []response.KamarKostReponse, err error)
+	GetKamarByKost(id int) (result []kamarresponse.GetKamarResponse, err error)
 }
 
 type kostRepository struct {
 	db *sql.DB
 }
 
-func NewKostService(db *sql.DB) KostRepository {
+func NewKostRepository(db *sql.DB, kamarrepo kamarrepo.KamarRepository) KostRepository {
 	return &kostRepository{db: db}
 }
 
@@ -96,4 +100,74 @@ func (c *kostRepository) DeleteKost(id int) error {
 		return errs
 	}
 	return nil
+}
+
+func (c *kostRepository) GetKostKamar() (result []response.KamarKostReponse, err error) {
+	sql := `
+		SELECT
+			aks.id,
+			aks.nama_kost,
+			aks.alamat,
+			aks.type_kost,
+			count(ak.status_kamar) as sisa_kamar
+		FROM adk_kost aks 
+		join adk_kamar ak on aks.id = ak.kost_id 
+		where ak.status_kamar = 'Belum terisi'
+		GROUP BY aks.id, aks.nama_kost, aks.type_kost
+	`
+	rows, err := c.db.Query(sql)
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var kost response.KamarKostReponse
+
+		err = rows.Scan(&kost.Id, &kost.NamaKost, &kost.Alamat, &kost.TypeKost, &kost.SisaKamar)
+		if err != nil {
+			return
+		}
+
+		kost.DetailKamar, err = c.GetKamarByKost(kost.Id)
+		if err != nil {
+			return
+		}
+
+		result = append(result, kost)
+	}
+
+	return
+}
+
+func (c *kostRepository) GetKamarByKost(id int) (result []kamarresponse.GetKamarResponse, err error) {
+	sql := `
+		SELECT
+			ak.nama_kamar,
+			ak.harga_per_bulan,
+			ak.status_kamar
+		FROM adk_kamar ak
+		JOIN adk_kost aks ON ak.kost_id = aks.id
+		WHERE aks.id = $1
+	`
+	rows, err := c.db.Query(sql, id)
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var kamar kamarresponse.GetKamarResponse
+
+		err = rows.Scan(&kamar.NomorKamar, &kamar.HargaKamar, &kamar.StatusKamar)
+		if err != nil {
+			return
+		}
+
+		result = append(result, kamar)
+	}
+
+	return
 }

@@ -28,7 +28,7 @@ func AddKost(ctx *gin.Context) {
 	}
 
 	// Buat repo dan service
-	repo := repository.NewKostService(connection.DBConnections)
+	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
 	responseData, err := service.InsertKost(input)
@@ -59,7 +59,7 @@ func UpdateKost(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
 	// Buat repo dan service
-	repo := repository.NewKostService(connection.DBConnections)
+	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
 	responseData, err := service.UpdateKost(input, id)
@@ -80,7 +80,7 @@ func GetAllKost(ctx *gin.Context) {
 	var input response.ViewKostResponse
 
 	// Buat repo dan service
-	repo := repository.NewKostService(connection.DBConnections)
+	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
 	responseData, err := service.GetAllKost(input)
@@ -103,7 +103,7 @@ func DeleteKost(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
 	// Buat repo dan service
-	repo := repository.NewKostService(connection.DBConnections)
+	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
 	err := service.DeleteKost(id)
@@ -113,4 +113,24 @@ func DeleteKost(ctx *gin.Context) {
 	}
 
 	common.GenerateSuccessResponseWithData(ctx, "Successfully Delete kost ", nil)
+}
+
+// @Tags kost-controller
+// @Accept json
+// @Produce json
+// @Success 200 {object} common.APIResponse{data=response.KamarKostReponse}
+// @Router /kost/kamar [get]
+func GetKamarKost(ctx *gin.Context) {
+
+	// Buat repo dan service
+	repo := repository.NewKostRepository(connection.DBConnections, nil)
+	service := service.NewKostService(repo)
+
+	responseData, err := service.GetKostKamar()
+	if err != nil {
+		common.GenerateErrorResponse(ctx, err.Error())
+		return
+	}
+
+	common.GenerateSuccessResponseWithData(ctx, "Successfully Delete kost ", responseData)
 }
