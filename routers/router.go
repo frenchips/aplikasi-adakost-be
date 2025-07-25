@@ -50,10 +50,21 @@ func SetupRouters() *gin.Engine {
 		}
 
 	}
-	url := ginSwagger.URL("http://localhost:8080/v3/api-docs")
+
+	//
+	// url := ginSwagger.URL("http://localhost:8080/v3/api-docs")
+
+	// DEPLOYMENT
+	url := ginSwagger.URL("/v3/api-docs")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 	r.GET("/v3/api-docs", func(c *gin.Context) {
 		c.File("./docs/swagger.json")
+	})
+
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "API is running!",
+		})
 	})
 	return r
 }
