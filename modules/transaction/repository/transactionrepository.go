@@ -9,12 +9,13 @@ import (
 )
 
 type TransactionRepository interface {
-	SaveBooking(ordermodel bookingmodel.Booking, id int) (bookingmodel.Booking, error)
+	SaveBooking(ordermodel bookingmodel.Booking, id int, username string, userId int) (bookingmodel.Booking, error)
 	FindBookingById(id int) (bookingmodel.Booking, error)
 	UpdateBookingStatus(id int, status string, modifiedBy string) error
 	GetDetailBooking(id int) (result []response.BookingResponse, err error)
 	GetDetailBookingMember(id int) (result []response.PenghuniResponse, err error)
 	GetDetailUsersBooking(id int) (result []response.BookingResponse, err error)
+	GetDetailOwnersBooking(id int) (result []response.BookingResponse, err error)
 }
 
 type transactionRepository struct {
@@ -25,10 +26,10 @@ func NewTransactionRepository(db *sql.DB) TransactionRepository {
 	return &transactionRepository{db: db}
 }
 
-func (t *transactionRepository) SaveBooking(ordermodel bookingmodel.Booking, id int) (bookingmodel.Booking, error) {
+func (t *transactionRepository) SaveBooking(ordermodel bookingmodel.Booking, id int, username string, userId int) (bookingmodel.Booking, error) {
 
 	now := time.Now()
-	by := "Admin"
+	by := username
 
 	var kostId int
 	sqlKost := `SELECT id FROM adk_kost WHERE id = $1`
@@ -43,7 +44,7 @@ func (t *transactionRepository) SaveBooking(ordermodel bookingmodel.Booking, id 
 
 	sql := `INSERT INTO adk_booking(user_id, kamar_id, tanggal_mulai, tanggal_akhir, jumlah_penghuni, status_booking, created_at, created_by)
 			VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
-	errs = t.db.QueryRow(sql, &ordermodel.User.Id, &ordermodel.Kamar.Id, &now, &ordermodel.TanggalAkhir, &ordermodel.JumlahPenghuni, &ordermodel.StatusBooking, &now, by).Scan(&ordermodel.Id)
+	errs = t.db.QueryRow(sql, &userId, &ordermodel.Kamar.Id, &now, &ordermodel.TanggalAkhir, &ordermodel.JumlahPenghuni, &ordermodel.StatusBooking, &now, by).Scan(&ordermodel.Id)
 
 	if errs != nil {
 		panic(errs)
@@ -191,6 +192,49 @@ func (t *transactionRepository) GetDetailUsersBooking(id int) (result []response
 			JOIN adk_kamar ak ON ab.kamar_id = ak.id 
 			JOIN adk_kost aks ON ak.kost_id = aks.id
 			WHERE au.id = $1`
+	rows, err := t.db.Query(query, id)
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var booking response.BookingResponse
+
+		err = rows.Scan(&booking.Id, &booking.NamaKost, &booking.TypeKost, &booking.JumlahPenghuni, &booking.StatusBooking)
+		if err != nil {
+			return
+		}
+
+		// Ambil detail penghuni berdasarkan booking ID
+		booking.DetailPenghuni, err = t.GetDetailBookingMember(booking.Id)
+		if err != nil {
+			return
+		}
+
+		if len(booking.DetailPenghuni) > 0 {
+			result = append(result, booking)
+		}
+
+	}
+
+	return
+}
+
+func (t *transactionRepository) GetDetailOwnersBooking(id int) (result []response.BookingResponse, err error) {
+
+	query := `SELECT 
+				ab.id,
+				aks.nama_kost,
+				aks.type_kost,
+				ab.jumlah_penghuni,
+				ab.status_booking
+			FROM adk_booking ab 
+			JOIN adk_users au ON ab.user_id = au.id
+			JOIN adk_kamar ak ON ab.kamar_id = ak.id 
+			JOIN adk_kost aks ON ak.kost_id = aks.id
+			WHERE aks.pemilik_id = $1`
 	rows, err := t.db.Query(query, id)
 	if err != nil {
 		return

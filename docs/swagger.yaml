@@ -14,8 +14,6 @@ definitions:
         type: string
       namaKost:
         type: string
-      pemilik:
-        type: integer
       typeKost:
         type: string
     type: object
@@ -29,8 +27,6 @@ definitions:
         type: integer
       kamarId:
         type: integer
-      userId:
-        type: integer
     type: object
   request.KamarRequest:
     properties:
@@ -39,8 +35,6 @@ definitions:
       kostId:
         type: integer
       namaKamar:
-        type: string
-      statusKamar:
         type: string
     type: object
   request.Login:
@@ -57,7 +51,7 @@ definitions:
       namaPenghuni:
         type: string
       nomorHp:
-        type: integer
+        type: string
       nomorKtp:
         type: string
       status:
@@ -65,6 +59,12 @@ definitions:
     type: object
   request.RegisterRequest:
     properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      noHandphone:
+        type: string
       password:
         type: string
       roleid:
@@ -175,7 +175,7 @@ definitions:
       namaPenghuni:
         type: string
       nomorHp:
-        type: integer
+        type: string
       nomorKtp:
         type: string
       status:
@@ -486,16 +486,10 @@ paths:
       - BearerAuth: []
       tags:
       - transaction-controller
-  /transaction-booking/{id}:
+  /transaction-booking-history:
     get:
       consumes:
       - application/json
-      parameters:
-      - description: ID Booking
-        in: path
-        name: id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -512,6 +506,7 @@ paths:
       - BearerAuth: []
       tags:
       - transaction-controller
+  /transaction-booking/{id}:
     post:
       consumes:
       - application/json
@@ -538,32 +533,6 @@ paths:
             - properties:
                 data:
                   $ref: '#/definitions/response.BookingSaveResponse'
-              type: object
-      security:
-      - BearerAuth: []
-      tags:
-      - transaction-controller
-  /transaction-booking/users/{id}:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: ID Booking
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/response.BookingResponse'
               type: object
       security:
       - BearerAuth: []

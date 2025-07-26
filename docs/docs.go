@@ -512,7 +512,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/transaction-booking/users/{id}": {
+        "/transaction-booking-history": {
             "get": {
                 "security": [
                     {
@@ -527,15 +527,6 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "transaction-controller"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID Booking",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -560,51 +551,6 @@ const docTemplate = `{
             }
         },
         "/transaction-booking/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "transaction-controller"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID Booking",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/response.BookingResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -683,9 +629,6 @@ const docTemplate = `{
                 "namaKost": {
                     "type": "string"
                 },
-                "pemilik": {
-                    "type": "integer"
-                },
                 "typeKost": {
                     "type": "string"
                 }
@@ -705,9 +648,6 @@ const docTemplate = `{
                 },
                 "kamarId": {
                     "type": "integer"
-                },
-                "userId": {
-                    "type": "integer"
                 }
             }
         },
@@ -721,9 +661,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "namaKamar": {
-                    "type": "string"
-                },
-                "statusKamar": {
                     "type": "string"
                 }
             }
@@ -749,7 +686,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "nomorHp": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nomorKtp": {
                     "type": "string"
@@ -762,6 +699,15 @@ const docTemplate = `{
         "request.RegisterRequest": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "noHandphone": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
@@ -931,7 +877,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "nomorHp": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nomorKtp": {
                     "type": "string"

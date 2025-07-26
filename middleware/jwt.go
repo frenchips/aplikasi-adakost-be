@@ -94,7 +94,7 @@ func ParseJwtToken(tokenString string) (*Claims, error) {
 	return claims, nil
 }
 
-func RoleMiddleware(requiredRole string) gin.HandlerFunc {
+func RoleMiddleware(requiredRole ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := extractToken(c)
 		if tokenStr == "" {
@@ -110,7 +110,24 @@ func RoleMiddleware(requiredRole string) gin.HandlerFunc {
 
 		fmt.Printf("User role: %s, Required: %s\n", claims.Role, requiredRole)
 
-		if claims.Role != requiredRole {
+		// if claims.Role != requiredRole {
+		// 	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden: insufficient role"})
+		// 	return
+		// }
+
+		// Debugging (opsional)
+		fmt.Printf("User role: %s, Allowed: %v\n", claims.Role, requiredRole)
+
+		// Validasi apakah role user termasuk yang diperbolehkan
+		allowed := false
+		for _, r := range requiredRole {
+			if claims.Role == r {
+				allowed = true
+				break
+			}
+		}
+
+		if !allowed {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden: insufficient role"})
 			return
 		}

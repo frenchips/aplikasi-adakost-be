@@ -12,9 +12,9 @@ import (
 )
 
 type KostService interface {
-	InsertKost(req request.AddKostRequest, username string) (response.KostResponse, error)
+	InsertKost(req request.AddKostRequest, username string, userId int) (response.KostResponse, error)
 	UpdateKost(req request.UpdateKostRequest, id int, username string) (response.KostResponse, error)
-	GetAllKost(kost response.ViewKostResponse) (result []response.ViewKostResponse, err error)
+	GetAllKost(kost response.ViewKostResponse, userId int) (result []response.ViewKostResponse, err error)
 	DeleteKost(id int) error
 	GetKostKamar() (result []response.KamarKostReponse, err error)
 }
@@ -27,7 +27,7 @@ func NewKostService(repo repository.KostRepository) KostService {
 	return &kostService{repo: repo}
 }
 
-func (u *kostService) InsertKost(req request.AddKostRequest, username string) (response.KostResponse, error) {
+func (u *kostService) InsertKost(req request.AddKostRequest, username string, userId int) (response.KostResponse, error) {
 	if req.NamaKost == "" {
 		return response.KostResponse{}, errors.New("username tidak boleh kosong")
 	}
@@ -44,7 +44,7 @@ func (u *kostService) InsertKost(req request.AddKostRequest, username string) (r
 		NamaKost: req.NamaKost,
 		Alamat:   req.Alamat,
 		Users: usermodel.Users{
-			Id: req.Pemilik,
+			Id: userId,
 		},
 		TypeKost:  req.TypeKost,
 		CreatedAt: time.Now(),
@@ -105,8 +105,8 @@ func (u *kostService) UpdateKost(req request.UpdateKostRequest, id int, username
 	return resp, nil
 }
 
-func (c *kostService) GetAllKost(kost response.ViewKostResponse) (result []response.ViewKostResponse, err error) {
-	return c.repo.GetAllKost(kost)
+func (c *kostService) GetAllKost(kost response.ViewKostResponse, userId int) (result []response.ViewKostResponse, err error) {
+	return c.repo.GetAllKost(kost, userId)
 }
 
 func (c *kostService) DeleteKost(id int) error {

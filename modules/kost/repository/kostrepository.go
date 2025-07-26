@@ -12,7 +12,7 @@ import (
 type KostRepository interface {
 	InserKost(kost model.Kost) (model.Kost, error)
 	UpdateKost(kost model.Kost, id int) (model.Kost, error)
-	GetAllKost(kost response.ViewKostResponse) (result []response.ViewKostResponse, err error)
+	GetAllKost(kost response.ViewKostResponse, userId int) (result []response.ViewKostResponse, err error)
 	DeleteKost(id int) error
 	GetKostKamar() (result []response.KamarKostReponse, err error)
 	GetKamarByKost(id int) (result []kamarresponse.GetKamarResponse, err error)
@@ -69,9 +69,9 @@ func (k *kostRepository) UpdateKost(kost model.Kost, id int) (model.Kost, error)
 	return kost, nil
 }
 
-func (c *kostRepository) GetAllKost(kost response.ViewKostResponse) (result []response.ViewKostResponse, err error) {
-	sql := "select ak.nama_kost, au.username, ak.alamat, ak.type_kost  from adk_kost ak join adk_users au on ak.pemilik_id = au.id  ORDER BY ak.id ASC"
-	rows, err := c.db.Query(sql)
+func (c *kostRepository) GetAllKost(kost response.ViewKostResponse, userId int) (result []response.ViewKostResponse, err error) {
+	sql := "select ak.nama_kost, au.username, ak.alamat, ak.type_kost  from adk_kost ak join adk_users au on ak.pemilik_id = au.id WHERE ak.pemilik_id = $1  ORDER BY ak.id ASC"
+	rows, err := c.db.Query(sql, userId)
 	if err != nil {
 		return
 	}
@@ -111,8 +111,9 @@ func (c *kostRepository) GetKostKamar() (result []response.KamarKostReponse, err
 			aks.type_kost,
 			count(ak.status_kamar) as sisa_kamar
 		FROM adk_kost aks 
-		join adk_kamar ak on aks.id = ak.kost_id 
-		where ak.status_kamar = 'Belum terisi'
+		join adk_kamar ak on aks.id = ak.kost_id
+		join adk_users au on aks.pemilik_id = au.id 
+		where ak.status_kamar = 'Belum terisi' 
 		GROUP BY aks.id, aks.nama_kost, aks.type_kost
 	`
 	rows, err := c.db.Query(sql)

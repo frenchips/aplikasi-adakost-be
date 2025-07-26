@@ -6,6 +6,7 @@ import (
 	"aplikasi-adakost-be/modules/user/repository"
 	"aplikasi-adakost-be/modules/user/request"
 	"aplikasi-adakost-be/modules/user/response"
+	"aplikasi-adakost-be/util"
 	"errors"
 	"fmt"
 	"time"
@@ -39,9 +40,14 @@ func (u *userService) SaveRegisterUser(req request.RegisterRequest) (response.Si
 		return response.SignUpResponse{}, fmt.Errorf("panjang password tidak boleh %d", len(req.Password))
 	}
 
+	hashPass, _ := util.HashPassword(req.Password)
+
 	user := model.Users{
 		Username:  req.Username,
-		Password:  req.Password,
+		Password:  hashPass,
+		FullName:  req.FullName,
+		NoHp:      req.NoHandphone,
+		Email:     req.Email,
 		RoleId:    req.RoleId,
 		CreatedAt: time.Now(),
 		CreatedBy: "SYSTEM",

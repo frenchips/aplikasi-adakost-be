@@ -504,7 +504,7 @@
                 }
             }
         },
-        "/transaction-booking/users/{id}": {
+        "/transaction-booking-history": {
             "get": {
                 "security": [
                     {
@@ -519,15 +519,6 @@
                 ],
                 "tags": [
                     "transaction-controller"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID Booking",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -552,51 +543,6 @@
             }
         },
         "/transaction-booking/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "transaction-controller"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID Booking",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/response.BookingResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -675,9 +621,6 @@
                 "namaKost": {
                     "type": "string"
                 },
-                "pemilik": {
-                    "type": "integer"
-                },
                 "typeKost": {
                     "type": "string"
                 }
@@ -697,9 +640,6 @@
                 },
                 "kamarId": {
                     "type": "integer"
-                },
-                "userId": {
-                    "type": "integer"
                 }
             }
         },
@@ -713,9 +653,6 @@
                     "type": "integer"
                 },
                 "namaKamar": {
-                    "type": "string"
-                },
-                "statusKamar": {
                     "type": "string"
                 }
             }
@@ -741,7 +678,7 @@
                     "type": "string"
                 },
                 "nomorHp": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nomorKtp": {
                     "type": "string"
@@ -754,6 +691,15 @@
         "request.RegisterRequest": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "noHandphone": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
@@ -923,7 +869,7 @@
                     "type": "string"
                 },
                 "nomorHp": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nomorKtp": {
                     "type": "string"

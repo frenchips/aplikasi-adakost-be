@@ -20,10 +20,11 @@ const (
 )
 
 type TransactionService interface {
-	SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int, username string) (bookingresponse.BookingSaveResponse, error)
+	SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int, username string, userId int) (bookingresponse.BookingSaveResponse, error)
 	CancelOrderBooking(id int, username string) error
 	GetDetailBooking(id int) ([]response.BookingResponse, error)
 	GetDetailUserBooking(id int) ([]response.BookingResponse, error)
+	GetDetailOwnerBooking(id int) ([]response.BookingResponse, error)
 }
 
 type transactionService struct {
@@ -35,7 +36,7 @@ func NewTransactionService(repo bookingrepository.TransactionRepository, kamarRe
 	return &transactionService{repo: repo, kamarRepo: kamarRepo}
 }
 
-func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int, username string) (bookingresponse.BookingSaveResponse, error) {
+func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSaveRequest, id int, username string, userId int) (bookingresponse.BookingSaveResponse, error) {
 
 	if request.Jumlah > 2 {
 		return bookingresponse.BookingSaveResponse{}, fmt.Errorf("maksimal penghuni 2 tidak boleh lebih %d", request.Jumlah)
@@ -43,7 +44,7 @@ func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSave
 
 	booking := bookingmodel.Booking{
 		User: usermodel.Users{
-			Id: request.UserId,
+			Id: userId,
 		},
 		Kamar: kamarmodel.Kamar{
 			Id: request.KamarId,
@@ -53,7 +54,7 @@ func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSave
 		JumlahPenghuni: request.Jumlah,
 		StatusBooking:  StatusConfirm,
 		CreatedAt:      time.Now(),
-		CreatedBy:      "Admin",
+		CreatedBy:      username,
 		DetailPenghuni: func() []bookingmodel.BookingMember {
 			var detailPenghuni []bookingmodel.BookingMember
 
@@ -65,14 +66,14 @@ func (t *transactionService) SaveOrderBooking(request bookingrequest.BookingSave
 					MaritalStatus: penghuniReq.StatusPerkawinan,
 					NomorKtp:      penghuniReq.NomorKtp,
 					CreatedAt:     time.Now(),
-					CreatedBy:     "Admin",
+					CreatedBy:     username,
 				})
 			}
 			return detailPenghuni
 		}(),
 	}
 
-	saveOrder, err := t.repo.SaveBooking(booking, id)
+	saveOrder, err := t.repo.SaveBooking(booking, id, username, userId)
 	if err != nil {
 		return bookingresponse.BookingSaveResponse{}, err
 	}
@@ -143,6 +144,15 @@ func (t *transactionService) GetDetailBooking(id int) ([]response.BookingRespons
 
 func (t *transactionService) GetDetailUserBooking(id int) ([]response.BookingResponse, error) {
 	result, err := t.repo.GetDetailUsersBooking(id)
+	if err != nil {
+		return nil, fmt.Errorf("gagal menampilkan detail booking: %v", err)
+	}
+
+	return result, nil
+}
+
+func (t *transactionService) GetDetailOwnerBooking(id int) ([]response.BookingResponse, error) {
+	result, err := t.repo.GetDetailOwnersBooking(id)
 	if err != nil {
 		return nil, fmt.Errorf("gagal menampilkan detail booking: %v", err)
 	}

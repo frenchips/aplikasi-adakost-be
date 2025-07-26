@@ -46,7 +46,7 @@ func AddKost(ctx *gin.Context) {
 	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
-	responseData, err := service.InsertKost(input, claims.Username)
+	responseData, err := service.InsertKost(input, claims.Username, claims.UserID)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
@@ -113,7 +113,20 @@ func GetAllKost(ctx *gin.Context) {
 	repo := repository.NewKostRepository(connection.DBConnections, nil)
 	service := service.NewKostService(repo)
 
-	responseData, err := service.GetAllKost(input)
+	// Ambil user dari context
+	claimsInterface, exists := ctx.Get("user")
+	if !exists {
+		common.GenerateErrorResponse(ctx, "Unauthorized: token not found")
+		return
+	}
+
+	claims, ok := claimsInterface.(*middleware.Claims)
+	if !ok {
+		common.GenerateErrorResponse(ctx, "Invalid token data")
+		return
+	}
+
+	responseData, err := service.GetAllKost(input, claims.UserID)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
@@ -164,5 +177,5 @@ func GetKamarKost(ctx *gin.Context) {
 		return
 	}
 
-	common.GenerateSuccessResponseWithData(ctx, "Successfully Delete kost ", responseData)
+	common.GenerateSuccessResponseWithData(ctx, "Successfully Get Kost ", responseData)
 }

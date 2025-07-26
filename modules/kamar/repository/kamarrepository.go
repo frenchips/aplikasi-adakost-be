@@ -11,7 +11,7 @@ type KamarRepository interface {
 	InsertKamar(kamar kamarmodel.Kamar) (kamarmodel.Kamar, error)
 	UpdateKamar(kamar kamarmodel.Kamar, id int) (kamarmodel.Kamar, error)
 	DeleteKamar(id int) error
-	GetAllKost(kamar response.GetKamarResponse) (result []response.GetKamarResponse, err error)
+	GetAllKost(kamar response.GetKamarResponse, userId int) (result []response.GetKamarResponse, err error)
 	UpdateKostKamar(kamar kamarmodel.Kamar, id int) (kamarmodel.Kamar, error)
 	UpdateKamarStatus(kamarId int, status string) error
 }
@@ -108,9 +108,17 @@ func (k *kamarRepository) DeleteKamar(id int) error {
 	return nil
 }
 
-func (k *kamarRepository) GetAllKost(kamar response.GetKamarResponse) (result []response.GetKamarResponse, err error) {
-	sql := "select ak.nama_kamar, ak.harga_per_bulan, ak.status_kamar  from adk_kamar ak  ORDER BY ak.id ASC"
-	rows, err := k.db.Query(sql)
+func (k *kamarRepository) GetAllKost(kamar response.GetKamarResponse, userId int) (result []response.GetKamarResponse, err error) {
+	sql := `select 
+				ak.nama_kamar, 
+				ak.harga_per_bulan, 
+				ak.status_kamar  
+			from adk_kamar ak  
+			join adk_kost aks on ak.kost_id = aks.id
+			join adk_users au on aks.pemilik_id = au.id
+			where aks.pemilik_id = $1
+			ORDER BY ak.id ASC`
+	rows, err := k.db.Query(sql, userId)
 	if err != nil {
 		return
 	}

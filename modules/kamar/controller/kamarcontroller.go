@@ -138,7 +138,20 @@ func GetAllKamar(ctx *gin.Context) {
 	repo := repository.NewKamarRepository(connection.DBConnections)
 	service := service.NewKamarService(repo)
 
-	responseData, err := service.GetAllKamar(input)
+	// Ambil user dari context
+	claimsInterface, exists := ctx.Get("user")
+	if !exists {
+		common.GenerateErrorResponse(ctx, "Unauthorized: token not found")
+		return
+	}
+
+	claims, ok := claimsInterface.(*middleware.Claims)
+	if !ok {
+		common.GenerateErrorResponse(ctx, "Invalid token data")
+		return
+	}
+
+	responseData, err := service.GetAllKamar(input, claims.UserID)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return

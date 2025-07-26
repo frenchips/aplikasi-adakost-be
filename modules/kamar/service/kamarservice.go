@@ -9,11 +9,13 @@ import (
 	"time"
 )
 
+const StatusBelumTeisi = "Belum terisi"
+
 type KamarService interface {
 	InsertKamar(req kamarrequest.KamarRequest, username string) (kamarresponse.KamarResponse, error)
 	UpdateKamar(req kamarrequest.UpdateKamarRequest, id int, username string) (kamarresponse.KamarResponse, error)
 	DeleteKamar(id int) error
-	GetAllKamar(kamar kamarresponse.GetKamarResponse) (result []kamarresponse.GetKamarResponse, err error)
+	GetAllKamar(kamar kamarresponse.GetKamarResponse, userId int) (result []kamarresponse.GetKamarResponse, err error)
 }
 
 type kamarService struct {
@@ -29,7 +31,7 @@ func (k *kamarService) InsertKamar(req kamarrequest.KamarRequest, username strin
 	kamar := kamarmodel.Kamar{
 		NamaKamar:   req.NamaKamar,
 		HargaKamar:  req.HargaKamar,
-		StatusKamar: req.StatusKamar,
+		StatusKamar: StatusBelumTeisi,
 		Kost: kostmodel.Kost{
 			Id: req.KostId,
 		},
@@ -99,6 +101,6 @@ func (k *kamarService) DeleteKamar(id int) error {
 	return k.repo.DeleteKamar(id)
 }
 
-func (k *kamarService) GetAllKamar(kamar kamarresponse.GetKamarResponse) (result []kamarresponse.GetKamarResponse, err error) {
-	return k.repo.GetAllKost(kamar)
+func (k *kamarService) GetAllKamar(kamar kamarresponse.GetKamarResponse, userId int) (result []kamarresponse.GetKamarResponse, err error) {
+	return k.repo.GetAllKost(kamar, userId)
 }

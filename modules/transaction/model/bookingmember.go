@@ -6,7 +6,7 @@ type BookingMember struct {
 	Id            int       `json:"id"`
 	Booking       Booking   `json:"booking"`
 	NamaPenghuni  string    `json:"namaPenghuni"`
-	NomorHp       int       `json:"nomorHp"`
+	NomorHp       string    `json:"nomorHp"`
 	JenisKelamin  string    `json:"jenisKelamin"`
 	MaritalStatus string    `json:"statusKtp"`
 	NomorKtp      string    `json:"nomorKtp"`

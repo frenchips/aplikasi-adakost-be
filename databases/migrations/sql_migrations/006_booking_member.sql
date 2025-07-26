@@ -5,7 +5,7 @@ create table adk_booking_member(
 	booking_id int not null,
 	nama_penghuni varchar(128) not null,
 	jenis_kelamin varchar(64) not null,
-	nomor_handphone int not null,
+	nomor_handphone varchar(16) not null,
 	status_perkawinan varchar(64) not null,
 	ktp_penghuni varchar(64) not null,
     created_at timestamp not null,

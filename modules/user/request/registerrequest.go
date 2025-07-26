@@ -6,9 +6,12 @@ import (
 )
 
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	RoleId   int    `json:"roleid"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	FullName    string `json:"fullName"`
+	NoHandphone string `json:"noHandphone"`
+	Email       string `json:"email"`
+	RoleId      int    `json:"roleid"`
 }
 
 func (l *RegisterRequest) ValidateLogin() (err error) {

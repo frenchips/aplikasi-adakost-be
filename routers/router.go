@@ -20,6 +20,7 @@ func SetupRouters() *gin.Engine {
 		// LOGIN DAN REGISTER
 		api.POST("/signup", usercontroller.SaveRegister)
 		api.POST("/login", usercontroller.Login)
+		api.GET("/kost/kamar", kostcontroller.GetKamarKost)
 
 		// KOST ROLE PEMILIK
 		api.Use(middleware.JwtMiddleware())
@@ -28,7 +29,7 @@ func SetupRouters() *gin.Engine {
 			api.PUT("/kost/:id", middleware.RoleMiddleware("pemilik"), kostcontroller.UpdateKost)
 			api.GET("/kost", middleware.RoleMiddleware("pemilik"), kostcontroller.GetAllKost)
 			api.DELETE("/kost/:id", middleware.RoleMiddleware("pemilik"), kostcontroller.DeleteKost)
-			api.GET("/kost/kamar", middleware.RoleMiddleware("pemilik"), middleware.RoleMiddleware("penyewa"), kostcontroller.GetKamarKost)
+
 		}
 
 		// KAMAR
@@ -45,8 +46,7 @@ func SetupRouters() *gin.Engine {
 		{
 			api.POST("/transaction-booking/:id", middleware.RoleMiddleware("penyewa"), transcationcontroller.SaveOrderBooking)
 			api.PUT("/transaction-booking-cancel/:id", middleware.RoleMiddleware("penyewa"), transcationcontroller.CancelOrderBooking)
-			api.GET("/transaction-booking/:id", middleware.RoleMiddleware("penyewa"), middleware.RoleMiddleware("penyewa"), transcationcontroller.GetBookingList)
-			api.GET("/transaction-booking/users/:id", middleware.RoleMiddleware("penyewa"), transcationcontroller.GetUsersBookingList)
+			api.GET("/transaction-booking-history", middleware.RoleMiddleware("pemilik", "penyewa"), transcationcontroller.GetHistoryBookingList)
 		}
 
 	}

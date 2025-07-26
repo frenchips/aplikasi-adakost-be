@@ -8,6 +8,7 @@ import (
 	transactionrepository "aplikasi-adakost-be/modules/transaction/repository"
 	"aplikasi-adakost-be/modules/transaction/request"
 	"aplikasi-adakost-be/modules/transaction/service"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -49,7 +50,7 @@ func SaveOrderBooking(ctx *gin.Context) {
 	repoKamar := kamarrepository.NewKamarRepository(connection.DBConnections)
 	service := service.NewTransactionService(repoTransaction, repoKamar)
 
-	responseData, err := service.SaveOrderBooking(input, id, claims.Username)
+	responseData, err := service.SaveOrderBooking(input, id, claims.Username, claims.UserID)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
@@ -98,53 +99,46 @@ func CancelOrderBooking(ctx *gin.Context) {
 // @Tags transaction-controller
 // @Accept json
 // @Produce json
-// @Param id path int true "ID Booking"
 // @Success 200 {object} common.APIResponse{data=response.BookingResponse}
-// @Router /transaction-booking/{id} [get]
+// @Router /transaction-booking-history [get]
 // @Security BearerAuth
-func GetBookingList(ctx *gin.Context) {
-	idStr := ctx.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		common.GenerateErrorResponse(ctx, "ID tidak valid")
-		return
-	}
+func GetHistoryBookingList(ctx *gin.Context) {
 
 	repo := transactionrepository.NewTransactionRepository(connection.DBConnections)
 	service := service.NewTransactionService(repo, nil)
 
-	bookings, err := service.GetDetailBooking(id)
-	if err != nil {
-		common.GenerateErrorResponse(ctx, err.Error())
+	claimsInterface, exists := ctx.Get("user")
+	if !exists {
+		common.GenerateErrorResponse(ctx, "Unauthorized: token not found")
 		return
 	}
 
-	common.GenerateSuccessResponseWithData(ctx, "Berhasil mengambil data booking", bookings)
-}
-
-// @Tags transaction-controller
-// @Accept json
-// @Produce json
-// @Param id path int true "ID Booking"
-// @Success 200 {object} common.APIResponse{data=response.BookingResponse}
-// @Router /transaction-booking/users/{id} [get]
-// @Security BearerAuth
-func GetUsersBookingList(ctx *gin.Context) {
-	idStr := ctx.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		common.GenerateErrorResponse(ctx, "ID tidak valid")
+	claims, ok := claimsInterface.(*middleware.Claims)
+	if !ok {
+		common.GenerateErrorResponse(ctx, "Invalid token data")
 		return
 	}
 
-	repo := transactionrepository.NewTransactionRepository(connection.DBConnections)
-	service := service.NewTransactionService(repo, nil)
+	userId := claims.UserID
+	role := claims.Role
 
-	bookings, err := service.GetDetailUserBooking(id)
-	if err != nil {
-		common.GenerateErrorResponse(ctx, err.Error())
-		return
+	if role == "penyewa" {
+
+		bookings, err := service.GetDetailUserBooking(userId)
+		if err != nil {
+			common.GenerateErrorResponse(ctx, err.Error())
+			return
+		}
+		fmt.Println("login sebagai : ", role)
+		common.GenerateSuccessResponseWithData(ctx, "Berhasil mengambil data booking", bookings)
+	} else if role == "pemilik" {
+		bookings, err := service.GetDetailOwnerBooking(userId)
+		if err != nil {
+			common.GenerateErrorResponse(ctx, err.Error())
+			return
+		}
+		fmt.Println("login sebagai : ", role)
+		common.GenerateSuccessResponseWithData(ctx, "Berhasil mengambil data booking", bookings)
 	}
 
-	common.GenerateSuccessResponseWithData(ctx, "Berhasil mengambil data booking", bookings)
 }

@@ -2,7 +2,9 @@ package repository
 
 import (
 	"aplikasi-adakost-be/modules/user/model"
+	"aplikasi-adakost-be/util"
 	"database/sql"
+	"errors"
 )
 
 type UsersRepository interface {
@@ -20,8 +22,9 @@ func NewUsersRepo(db *sql.DB) UsersRepository {
 
 func (u *usersRepository) Register(user model.Users) (model.Users, error) {
 
-	sql := "INSERT INTO adk_users(username, password, role_id, created_at, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	errs := u.db.QueryRow(sql, &user.Username, &user.Password, &user.RoleId, &user.CreatedAt, &user.CreatedBy).Scan(&user.Id)
+	sql := `INSERT INTO adk_users(username, password, fullname, no_handphone, email, role_id, created_at, created_by) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
+	errs := u.db.QueryRow(sql, &user.Username, &user.Password, &user.FullName, &user.NoHp, &user.Email, &user.RoleId, &user.CreatedAt, &user.CreatedBy).Scan(&user.Id)
 	if errs != nil {
 		panic(errs)
 	}
@@ -32,10 +35,17 @@ func (u *usersRepository) Register(user model.Users) (model.Users, error) {
 func (u *usersRepository) Login(user model.UserLogin) (model.UserLogin, error) {
 
 	var rolesName string
-	sql := `SELECT au.id, au.username, au.password, ar.name FROM adk_users au JOIN adk_roles ar ON au.role_id = ar.id WHERE au.username = $1 and au.password = $2`
-	err := u.db.QueryRow(sql, user.Username, user.Password).Scan(&user.Id, &user.Username, &user.Password, &rolesName)
+	var hashedPassword string
+	sql := `SELECT au.id, au.username, au.password, ar.name 
+			FROM adk_users au 
+			JOIN adk_roles ar ON au.role_id = ar.id 
+			WHERE au.username = $1`
+	err := u.db.QueryRow(sql, user.Username).Scan(&user.Id, &user.Username, &hashedPassword, &rolesName)
 	if err != nil {
 		return model.UserLogin{}, err
+	}
+	if !util.CheckPasswordHash(user.Password, hashedPassword) {
+		return model.UserLogin{}, errors.New("password salah")
 	}
 	user.Roles = []model.Roles{{RoleName: rolesName}}
 
